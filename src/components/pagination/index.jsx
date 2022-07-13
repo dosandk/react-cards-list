@@ -1,60 +1,61 @@
-import { Component } from "react";
+import {useEffect, useState} from 'react';
 
-// export default class Pagination extends Component {
-//     constructor(props) {
-//         super(props);
+const Pagination = ({
+  activePage = 1,
+  totalPages = 0,
+  onPageChanged = () => {
+  },
+}) => {
+  const [isHidden, setHidden] = useState(true);
+  const [activePageIndex, setActivePageIndex] = useState(activePage - 1);
 
-//         this.state = {
+  useEffect(() => {
+    setHidden(!Boolean(totalPages));
+  }, []);
 
-//         };
-//     }
+  const goToNextPage = event => {
+    goToPage(activePageIndex + 1)(event);
+  };
 
-//     render () {
-//         return (
-//             <div>Hello, from Pagination</div>
-//         );
-//     }
-// }
+  const goToPrevPage = event => {
+    goToPage(activePageIndex - 1)(event);
+  };
 
-const PaginationItem = ({ pageIndex, isActive }) => {
-    return (
-        <li>
-        <a href="#"
-            className="page-link ${isActive}">
-        { pageIndex + 1 }
-        </a>
-    </li>
-    );
-}
+  const goToPage = (pageIndex) => {
+    return event => {
+      event.preventDefault();
 
-const Pagination = ({ totalPages = 0 }) => {
+      if (pageIndex === activePageIndex) return;
+      if (pageIndex > totalPages - 1 || pageIndex < 0) return;
 
-    const fn = () => {};
-    const fn2 = () => {};
+      setActivePageIndex(pageIndex);
+      onPageChanged(pageIndex);
+    }
+  };
 
-    return (
-        <nav className="os-pagination">
-          <a href="#" className="page-link previous" data-element="nav-prev">
-            <i className="bi bi-chevron-left"></i>
-          </a>
+  return <nav className="os-pagination" hidden={isHidden}>
+    <a href="#" className="page-link previous" onClick={goToPrevPage}>
+      <i className="bi bi-chevron-left"></i>
+    </a>
 
-          <ul className="page-list" data-element="pagination">
+    <ul className="page-list">
+      {
+        new Array(totalPages).fill(1).map((_, pageIndex) => {
+          const isActive = pageIndex === activePageIndex ? 'active' : '';
 
-            {
-                new Array(totalPages).fill(1).map((_, index) => {
-                    return <PaginationItem pageIndex={index} />
-                })
-            }
+          return <li key={pageIndex} onClick={goToPage(pageIndex)}>
+            <a href="#" className={`page-link ${isActive}`}>
+              {pageIndex + 1}
+            </a>
+          </li>
+        })
+      }
+    </ul>
 
-          </ul>
-          
-          <a href="#" className="page-link next" data-element="nav-next">
-            <i class="bi bi-chevron-right"></i>
-          </a>
-        </nav>
-    )
+    <a href="#" className="page-link next" onClick={goToNextPage}>
+      <i className="bi bi-chevron-right"></i>
+    </a>
+  </nav>
 };
 
 export default Pagination;
-
-            

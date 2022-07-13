@@ -1,30 +1,55 @@
 import Card from './components/card';
 import Pagination from './components/pagination';
+import {useCallback, useEffect, useState} from "react";
+import CardsList from "./components/cards-list";
 
-// import './App.css';
+const url = new URL('products', 'https://online-store.bootcamp.place/api/');
 
-const product = {
-  "id": "76w0hz7015kkr9kjkav",
-  "images": [
-    "https://content2.rozetka.com.ua/goods/images/big_tile/163399632.jpg",
-    "https://content.rozetka.com.ua/goods/images/big_tile/163399633.jpg"
-  ],
-  "title": "Ноутбук Acer Aspire 3 A315-57G-336G (NX.HZREU.01S) Charcoal Black",
-  "rating": 2.89,
-  "price": 15999,
-  "category": "laptops",
-  "brand": "acer"
-};
-
-function App() {
+const App = () => {
   const pageSize = 9;
+  const totalPages = 12;
+  const [loading, setLoading] = useState(false);
+  const [list, setList] = useState([]);
 
-  // fetch ----> [...] / pageSize = totalPages
+  const onPageChanged = useCallback((pageIndex) => {
+    setPagination(pageIndex);
+
+    if (loading === false) {
+      loadData(url);
+    }
+  }, []);
+
+  const setPagination = useCallback(pageIndex => {
+    const start = pageIndex * pageSize;
+    const end = start + pageSize;
+
+    url.searchParams.set('_start', start);
+    url.searchParams.set('_end', end);
+  }, []);
+
+  useEffect(() => {
+    setPagination(0);
+    loadData(url);
+  }, []);
+
+  const loadData = useCallback(async (url) => {
+    try {
+      setLoading(true);
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      setList(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('error', error.message);
+    }
+  }, []);
 
   return (
     <div className="App">
-        <Card product={product} />
-        <Pagination totalPages={12} />
+      <CardsList data={list} getCard={props => <Card {...props} />} />
+      <Pagination activePage={1} totalPages={totalPages} onPageChanged={onPageChanged} />
     </div>
   );
 }

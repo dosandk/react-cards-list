@@ -1,47 +1,30 @@
-import { Component } from "react";
+const Card = ({product = {}}) => {
+  const {rating = '', price = '', title = '', description = '', images = []} = product;
+  const shortDescription = description.slice(0, 50) + '...';
 
-export default class Card extends Component {
-    constructor(props) {
-        super(props);
+  return <div className="os-product-card">
+    <div className="os-product-img" style={{backgroundImage: `url(${images[0]})`}}></div>
 
-        this.product = props.product;
+    <div className="os-product-content">
+      <div className="os-product-price-wrapper">
+        <div className="os-product-rating">
+          <span>{rating}</span>
+          <i className="bi bi-star"></i>
+        </div>
 
-        // this.state = {
+        <div className="os-product-price">{price} USD</div>
+      </div>
 
-        // };
-    }
-
-    render () {
-        console.log(this.props);
-
-        const { images, rating, price, title, category} = this.product;
-
-        // "background-image: url(${this.state.images[0]});"
-
-        return (
-            <div className="os-product-card">
-            <div className="os-product-img" style={{ "backgroundImage": `url(${images[0]})` }}></div>
-    
-            <div className="os-product-content">
-              <div className="os-product-price-wrapper">
-                <div className="os-product-rating">
-                  <span>{rating}</span>
-                  <i className="bi bi-star"></i>
-                </div>
-    
-                <div className="os-product-price">{price}</div>
-              </div>
-    
-              <h5 className="os-product-title">{title}</h5>
-              <p className="os-product-description">{category}</p>
-            </div>
-    
-            <footer className="os-product-footer">
-              <button className="os-btn-primary" data-element="addToCartBtn">
-                Add To Cart
-              </button>
-            </footer>
-          </div>
-        );
-    }
+      <h5 className="os-product-title">{title}</h5>
+      <p className="os-product-description">{shortDescription}</p>
+    </div>
+    <footer className="os-product-footer">
+      <button
+        className="os-btn-primary add-to-cart-btn">
+        Add To Cart
+      </button>
+    </footer>
+  </div>
 }
+
+export default Card;
